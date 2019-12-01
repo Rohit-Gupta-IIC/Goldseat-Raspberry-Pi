@@ -44,7 +44,7 @@ if buss:
 		i=0
 		while i < len(onlyfiles):
 				if onlyfiles[i] == "hello.img":
-					t = sub.Popen(["sudo","dd","of=/media/pi/UBUNTU-SERV/doc.txt","if=/home/pi/hello.img","status=progress","bs=16M"],stdout=sub.PIPE)
+					t = sub.Popen(["sudo","dd","of=/dev/sda1","if=/home/pi/hello.img","status=progress","bs=16M"],stdout=sub.PIPE)
 				else:
 					t = sub.Popen(["df","/root"],stdout=sub.PIPE)
 					output=t.communicate()[0]
@@ -56,7 +56,7 @@ if buss:
 					size_sda=int(output[8])
 					# 1GB of sapce is kept for pi to operate
 					if size_pi >= (size_sda+1048576):
-						t = sub.Popen(["sudo","dd","if=/media/pi/UBUNTU-SERV/doc.txt","of=/home/pi/hello.img","status=progress","bs=16M"],stdout=sub.PIPE)
+						t = sub.Popen(["sudo","dd","if=/dev/sda1","of=/home/pi/hello.img","status=progress","bs=16M"],stdout=sub.PIPE)
 					else:
 						print("Image creation service cannot be started, as the pi doesnot not have enough space")
 						break

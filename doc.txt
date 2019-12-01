@@ -1,0 +1,39 @@
+#to change the size of DRAM
+sudo sed -i -e 's/CONF_SWAPSIZE=100/CONF_SWAPSIZE=1024/g' /etc/dphys-swapfile 
+sudo /etc/init.d/dphys-swapfile stop
+sudo /etc/init.d/dphys-swapfile start
+
+##restore
+sudo dd of=/media/pi/D018-00B3/7z1900-x64.exe if=~/hello.img status=progress bs=16M
+
+##backup
+sudo dd if=/media/pi/D018-00B3/7z1900-x64.exe of=~/hello.img status=progress bs=16M
+
+#method to change the size of virual ram
+sudo nano /etc/dphys-swapfile
+change CONF_SWAPSIZE=100 to CONF_SWAPSIZE=1024
+sudo /etc/init.d/dphys-swapfile stop
+sudo /etc/init.d/dphys-swapfile start
+
+#To find the port 
+import os, subprocess
+r = subprocess.Popen(["lsusb","-t"], stdout=subprocess.PIPE)
+output=r.communicate()[0]	
+output=str(output.decode('utf-8'))
+output=output.split()
+a=0
+while a <len(output):
+	if output[a]=="Driver=usb-storage,":
+		print("Device Connected at: Port "+str(output[a-7]).strip(':'))
+	a=a+1
+
+#To find the serial number
+import subprocess as sub
+t = sub.Popen(["cat","/proc/cpuinfo"],stdout=sub.PIPE)
+output=t.communicate()[0]
+output=(str(output.decode('utf8'))).split()
+a=0
+while a<len(output):
+	if output[a]=="Serial":
+		print(output[a+2])
+	a=a+1

@@ -58,7 +58,6 @@ if buss:
 				t = sub.Popen(["sudo","dd","if=/dev/sda1","of=/home/pi/hello.img","status=progress","bs=16M"],stdout=sub.PIPE)
 			else:
 				print("Image creation service cannot be started, as the pi doesnot not have enough space")
-				break
 		else:
 			pwd = os.path.dirname(os.path.realpath(__file__)).rstrip('\n')
 			onlyfiles = [ f for f in os.listdir(pwd) if os.path.isfile(os.path.join(pwd, f)) ]

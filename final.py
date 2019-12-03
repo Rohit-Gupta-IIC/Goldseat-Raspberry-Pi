@@ -5,7 +5,6 @@ c.execute('''CREATE TABLE if not exists Pi_details (Pid text(50))''')
 c.commit()
 
 ######### block to find the uniue raspberry py id ##############
-
 t = sub.Popen(["cat","/proc/cpuinfo"],stdout=sub.PIPE)
 output=t.communicate()[0]
 output=(str(output.decode('utf8'))).split()
@@ -51,32 +50,38 @@ if buss:
 		output=t1.communicate()[0]
 		output=(str(output.decode('utf8'))).split()
 		size_sda=int(output[8])
-		check = sys.argv[1]
-		if check == "-r":
-			# 1GB of sapce is kept for pi to operate
+		# block to find if image is already present on the disk or not
+		pwd = os.path.dirname(os.path.realpath(__file__)).rstrip('\n')
+		onlyfiles = [ f for f in os.listdir(pwd) if os.path.isfile(os.path.join(pwd, f)) ]
+		i=0
+		file_presence =  False
+		while i < len(onlyfiles):
+			if onlyfiles[i] == "hello.img":
+				file_presence= True
+			i=i+1
+		# count the arguments
+		arguments = len(sys.argv) - 1
+		# to create backup file
+		if arguments>=1 and sys.argv[1] == "-r":
+			#if the img file exists then delete it
+			if file_presence == True:
+				_= sub.Popen(["sudo","rm","/home/pi/hello.img"],stdout=sub.PIPE)
+			# image is create if pi has empty space equal to size of sd card plus 1 GB
 			if size_pi >= (size_sda+1048576):
 				t = sub.Popen(["sudo","dd","if=/dev/sda1","of=/home/pi/hello.img","status=progress","bs=16M"],stdout=sub.PIPE)
 			else:
 				print("Image creation service cannot be started, as the pi doesnot not have enough space")
+		# to write backup file
 		else:
-			pwd = os.path.dirname(os.path.realpath(__file__)).rstrip('\n')
-			onlyfiles = [ f for f in os.listdir(pwd) if os.path.isfile(os.path.join(pwd, f)) ]
-			i=0
-			while i < len(onlyfiles):
-				if onlyfiles[i] == "hello.img":
-					# 100MB space is kept on the pen drive
-					if (size_sda+104857600) >= size_pi :
-						t = sub.Popen(["sudo","dd","of=/dev/sda1","if=/home/pi/hello.img","status=progress","bs=16M"],stdout=sub.PIPE)
-					else:
-						print("Image creation service cannot be started, as the pi doesnot not have enough space")
-						break	
+			#if the file does not exist than we create it
+			if file_presence == False:
+       				print("File does not already exist, kindly create the backup first")
+			else:
+				# 100MB space is kept on the USB
+				if (size_sda+104857600) >= size_pi :
+					t = sub.Popen(["sudo","dd","of=/dev/sda1","if=/home/pi/hello.img","status=progress","bs=16M"],stdout=sub.PIPE)
 				else:
- 					if size_pi >= (size_sda+1048576):
-						t = sub.Popen(["sudo","dd","if=/dev/sda1","of=/home/pi/hello.img","status=progress","bs=16M"],stdout=sub.PIPE)
-					else:
-						print("Image creation service cannot be started, as the pi doesnot not have enough space")
-						break
-			i = i+1	
+					print("Image restore service cannot be started, as the sd card doesnot not have enough space")	
 	else:
 		print("Service cannot work, as the license key doesnot matches")
 		print("Please launch the application from the designated machine")

@@ -18,6 +18,8 @@ The repository is a python3 based Raspberry Pi utility which creates the backup 
 ### Setup
 in the shell execute the following commands
 ``` shell
+git clone https://github.com/Rohit-Gupta-IIC/Goldseat-Raspberry-Pi.git
+cd Goldseat-Raspberry-Pi
 sudo chmod 777 run.sh
 ./run.sh
 ```
